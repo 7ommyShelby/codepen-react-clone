@@ -59,7 +59,7 @@ const NewProjects = () => {
       <script>${state.js}</script>
     </body>
   </html>
-    `
+    `;
 
     dispatch({ type: "setoutput", payload: result })
   }
@@ -179,13 +179,11 @@ console.log(state.output);
 
             </div>
 
-            <div className='overflow-hidden h-full' style={{ ...layoutCSS, background: '#c0c3c6' }}>
+            <div className='overflow-hidden h-full justify-start items-start bg-slate-600 border-2' >
               <iframe
                 title="result"
-                srcDoc={output}
+                srcDoc={state.output}
               />
-
-
             </div>
 
           </SplitPane>
