@@ -218,3 +218,8 @@
     padding: 5px;
     color: black;
 }
+
+.button{
+    
+    transition: all .2s ease-in-out;
+}

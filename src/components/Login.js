@@ -1,12 +1,12 @@
 import logo from '../components/codepen-logo-eccd67a3067908687f74b7725787a321b0a13ce18601ba839aaab2bd8df9d772.svg'
 import { FaGoogle, FaFacebookSquare, FaGithub } from "react-icons/fa";
-import SignUp from './SignUp';
-import { Link,useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from './firebase';
 import { useRef } from 'react';
-
-
+import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+import { provider } from './firebase';
+import { gthb } from './firebase';
 
 
 const Login = () => {
@@ -17,25 +17,68 @@ const Login = () => {
 
   function handlelogin() {
 
-
     const email = emailref.current.value;
     const pass = passwdref.current.value;
 
-
     signInWithEmailAndPassword(auth, email, pass)
       .then((userCredential) => {
-        // Signed in 
-        console.log(userCredential);
+        // console.log(userCredential);
         const user = userCredential.user;
-        // ...
-        navigate('/*')  
-        
+
+        navigate('/home/projects')
+
       })
       .catch((error) => {
+
+        alert("check credentials")
+        navigate('/home/auth')
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      });
+
+  }
+
+  function googlesignup() {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        navigate('/home/projects')
+        console.log(result);
+
+      }).catch((error) => {
+        alert("check credentials")
+        navigate('/home/auth')
+
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+        const credential = GoogleAuthProvider.credentialFromError(error);
+
+      });
+  }
+
+  function signupwithgitgub() {
+    signInWithPopup(auth, gthb)
+      .then((result) => {
+
+        navigate('/home/projects')
+
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        const user = result.user;
+
+      }).catch((error) => {
+        alert("check credentials")
         navigate('/home/auth')
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorMessage);
+
+        const email = error.customData.email;
+
+        const credential = GithubAuthProvider.credentialFromError(error);
+
       });
 
   }
@@ -45,7 +88,7 @@ const Login = () => {
   return (
     <>
       <section className='w-full flex items-center h-full flex-col mt-16 gap-8'>
-
+        
         <div className='w-[700px] flex gap-8'>
 
           <div className="loginweb flex flex-col gap-4">
@@ -56,8 +99,8 @@ const Login = () => {
             <h1 className='text-white text-6xl font-bold'>Log In</h1>
 
             <div className=' sign-log flex flex-col gap-4'>
-              <p><FaGoogle className='text-2xl' />Log In with Google</p>
-              <p><FaGithub className='text-2xl' />Log In with GitHub</p>
+              <p onClick={googlesignup}><FaGoogle className='text-2xl' />Log In with Google</p>
+              <p onClick={signupwithgitgub}><FaGithub className='text-2xl' />Log In with GitHub</p>
               <p><FaFacebookSquare className=' text-2xl' />Log In with Facebook</p>
             </div>
 

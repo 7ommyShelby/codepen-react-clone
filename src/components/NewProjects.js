@@ -1,13 +1,13 @@
 import { FaHtml5, FaAngleDown, FaCss3Alt } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { IoLogoJavascript } from "react-icons/io5";
-import React, { useState, useReducer, useRef, useCallback } from 'react';
+import React, { useState, useReducer, useRef, useCallback, useEffect } from 'react';
 import SplitPane, { Pane } from 'split-pane-react';
 import 'split-pane-react/esm/themes/default.css';
 import './style.css'
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
-
+import { abcdef } from '@uiw/codemirror-theme-abcdef';
 
 
 function reducer(state, action) {
@@ -25,22 +25,51 @@ function reducer(state, action) {
       return {
         ...state, js: action.payload
       };
-  }
+    case 'setoutput':
+      return {
+        ...state, output: action.payload
+      };
 
+    default: return state
+  }
 }
 
 const NewProjects = () => {
 
-  
   const initial = {
+
     html: '',
     css: '',
     js: '',
+    output: ''
+
   }
-  
+
   const [state, dispatch] = useReducer(reducer, initial)
 
- 
+  const output = () => {
+
+    const result = `
+  <html>
+    <head>
+      <style>${state.css}</style>
+    </head>
+    <body>
+        ${state.html}
+      <script>${state.js}</script>
+    </body>
+  </html>
+    `
+
+    dispatch({ type: "setoutput", payload: result })
+  }
+
+  useEffect(() => {
+    output()
+  }, [state.html, state.css, state.js])
+
+console.log(state.output);
+
   const [sizes, setSizes] = useState([
     "50%",
     "50%"
@@ -95,7 +124,7 @@ const NewProjects = () => {
                         </div>
                       </div>
                       <div className='editor'>
-                        <CodeMirror value={state.html} className='text-black' height="600px" extensions={[javascript({ jsx: true })]} onChange={(element) => {
+                        <CodeMirror theme={abcdef} value={state.html} className='text-black' height="600px" extensions={[javascript({ jsx: true })]} onChange={(element) => {
                           dispatch({ type: "sethtml", payload: element })
                         }} />
                       </div>
@@ -116,7 +145,7 @@ const NewProjects = () => {
                         </div>
                       </div>
                       <div className='editor'>
-                        <CodeMirror value={state.css} className='text-black' height="600px" extensions={[javascript({ jsx: true })]} onChange={(element) => {
+                        <CodeMirror theme={abcdef} value={state.css} className='text-black' height="600px" extensions={[javascript({ jsx: true })]} onChange={(element) => {
                           dispatch({ type: "setcss", payload: element })
                         }} />
                       </div>
@@ -137,7 +166,7 @@ const NewProjects = () => {
                         </div>
                       </div>
                       <div className='editor'>
-                        <CodeMirror value={state.js} className='text-black' height="600px" extensions={[javascript({ jsx: true })]} onChange={(element) => {
+                        <CodeMirror theme={abcdef} value={state.js} className='text-black' height="600px" extensions={[javascript({ jsx: true })]} onChange={(element) => {
                           dispatch({ type: "setjs", payload: element })
                         }} />
                       </div>
@@ -150,8 +179,13 @@ const NewProjects = () => {
 
             </div>
 
-            <div style={{ ...layoutCSS, background: '#c0c3c6' }}>
-              pane2
+            <div className='overflow-hidden h-full' style={{ ...layoutCSS, background: '#c0c3c6' }}>
+              <iframe
+                title="result"
+                srcDoc={output}
+              />
+
+
             </div>
 
           </SplitPane>

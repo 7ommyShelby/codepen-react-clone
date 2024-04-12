@@ -2,41 +2,48 @@ import React, { useState, useRef } from 'react'
 import { FaGoogle, FaFacebookSquare, FaGithub, FaCheckSquare } from "react-icons/fa";
 import { MdOutlineDoNotDisturbOn } from "react-icons/md";
 import { useNavigate } from 'react-router-dom'
-import { auth } from './firebase';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth, db } from './firebase';
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, GoogleAuthProvider, getRedirectResult, GithubAuthProvider } from "firebase/auth";
 import { provider } from './firebase';
+import { gthb } from './firebase';
 import { doc, setDoc } from 'firebase/firestore';
+import {  setuser } from '../redux/slice';
+import { useDispatch } from 'react-redux';
+
+
 
 const SignUp = () => {
+
+  const dispatch = useDispatch()
+  // const userdata = useSelector((state) => (state.user))
 
   const [active, setactive] = useState(false)
 
   const emailref = useRef(null)
   const passwdref = useRef(null)
-
+  const nameref = useRef(null)
+  
   const navigate = useNavigate();
 
   function handlesignup() {
 
     const email = emailref.current.value;
     const pass = passwdref.current.value;
+    
 
-    createUserWithEmailAndPassword(auth, email, pass).then((userdata) => {
-      console.log("test", userdata)
+    createUserWithEmailAndPassword(auth, email, pass).then((usercred) => {
 
+      console.log(usercred);
+
+      setDoc(doc(db, "users", usercred?.user?.uid), usercred?.user?.providerData[0]).then(() => {
+        dispatch(setuser(usercred?.user?.providerData[0]))
+      })
       navigate('/home/login')
 
-      // if (userdata) {
-      //   setDoc(doc(db, 'Users', userdata.uid, { email: userdata.email, fname: fname, lname: lname }))
-      //   navigate('/login')
-      // } else {
-      //   navigate('/signup')
-      // }
-
-
     }).catch((err) => {
+
       navigate('/home/auth')
+
       console.log(err.message)
     })
 
@@ -47,19 +54,45 @@ const SignUp = () => {
       .then((result) => {
 
         const credential = GoogleAuthProvider.credentialFromResult(result);
-        navigate('/home/*')
-        console.log(result);
+        navigate('/home/projects')
+        // console.log(result);
 
       }).catch((error) => {
 
+        alert("check credentials")
         navigate('/home/auth')
-
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorMessage);
         const credential = GoogleAuthProvider.credentialFromError(error);
 
       });
+  }
+
+  function signupwithgitgub() {
+    signInWithPopup(auth, gthb)
+      .then((result) => {
+
+        navigate('/home/projects')
+
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        const user = result.user;
+
+      }).catch((error) => {
+
+        navigate('/home/auth')
+        alert("check credentials")
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+
+        const email = error.customData.email;
+
+        const credential = GithubAuthProvider.credentialFromError(error);
+
+      });
+
   }
 
   return (
@@ -76,7 +109,7 @@ const SignUp = () => {
 
             <div className="log bg-white flex flex-col py-6 px-4 gap-4">
               <p onClick={googlesignup}><FaGoogle className='text-2xl' />SignUp with Google</p>
-              <p><FaGithub className='text-2xl' />SignUp with GitHub</p>
+              <p onClick={signupwithgitgub}><FaGithub className='text-2xl' />SignUp with GitHub</p>
               <p><FaFacebookSquare className=' text-2xl' />SignUp with Facebook</p>
 
               Or,
@@ -87,7 +120,7 @@ const SignUp = () => {
               <div className={`${active ? "auth flex gap-4 flex-col justify-start" : "hidden"}`}>
                 <div className='inputs'>
                   <label>Your Name</label>
-                  <input type="text" name="" id="" />
+                  <input ref={nameref} type="text" name="" id="" />
                 </div>
                 <div className='inputs'>
                   <label>Choose a Username</label>
