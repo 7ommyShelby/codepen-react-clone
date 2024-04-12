@@ -33,6 +33,7 @@ function App() {
 
         setDoc(doc(db, "users", usercred?.uid), usercred?.providerData[0]).then(() => {
           dispatch(setuser(usercred?.providerData[0]))
+          
         })
         
       }

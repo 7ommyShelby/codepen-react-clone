@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
     user: {},
     loading: false,
+    project : ""
 }
 
 export const codeSlice = createSlice({
@@ -14,6 +15,9 @@ export const codeSlice = createSlice({
         },
         setloading: (state, action) => {
             state.loading = action.payload
+        },
+        setproject : (state, action)=>{
+            state.project = action.payload
         }
     },
 })

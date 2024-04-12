@@ -1,5 +1,6 @@
-import { FaHtml5, FaAngleDown, FaCss3Alt } from "react-icons/fa";
+import { FaHtml5, FaAngleDown, FaCss3Alt, FaCheckCircle } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
+import { BsPencilSquare } from "react-icons/bs";
 import { IoLogoJavascript } from "react-icons/io5";
 import React, { useState, useReducer, useRef, useCallback, useEffect } from 'react';
 import SplitPane, { Pane } from 'split-pane-react';
@@ -8,7 +9,8 @@ import './style.css'
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { abcdef } from '@uiw/codemirror-theme-abcdef';
-
+import img from '../components/codepen-logo-eccd67a3067908687f74b7725787a321b0a13ce18601ba839aaab2bd8df9d772.svg'
+import { Link } from "react-router-dom";
 
 function reducer(state, action) {
 
@@ -29,6 +31,15 @@ function reducer(state, action) {
       return {
         ...state, output: action.payload
       };
+    case 'settitle':
+      return {
+        ...state, title: action.payload
+      };
+    case 'setcheck':
+      return {
+        ...state, check: action.payload
+      };
+
 
     default: return state
   }
@@ -36,13 +47,17 @@ function reducer(state, action) {
 
 const NewProjects = () => {
 
+
+
+
   const initial = {
 
     html: '',
     css: '',
     js: '',
-    output: ''
-
+    output: '',
+    title: "Untitled",
+    check: false,
   }
 
   const [state, dispatch] = useReducer(reducer, initial)
@@ -68,7 +83,7 @@ const NewProjects = () => {
     output()
   }, [state.html, state.css, state.js])
 
-console.log(state.output);
+
 
   const [sizes, setSizes] = useState([
     "50%",
@@ -93,7 +108,58 @@ console.log(state.output);
       <section className='h-screen w-full flex items-start justify-start overflow-hidden flex-col'>
         {/* alert section */}
 
-        {/* header section */}
+        <header className="w-full items-center justify-between px-12 py-4">
+          <div className="flex items-center gap-6">
+            <Link to={'./home/projects'}>
+              <img className="w-32" src={img} alt="" />
+            </Link>
+            <div className="flex items-center justify-center gap-6">
+              <div className="flex justify-center items-center gap-3">
+                {
+                  state.check ? (
+                    <>
+                      <input
+                        className="bg-slate-800 border-none px-2 rounded py-1"
+                        type="text"
+                        placeholder="your title"
+                        value={state.title}
+                        onChange={(e) => {
+                          dispatch({ type: 'settitle', payload: e.target.value })
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <p className="px-3 py-2 text-white text-lg">{state.title}</p>
+                    </>
+                  )
+                }
+              </div>
+              <div className="flex justify-center items-center gap-3">
+                {
+                  state.check ? (
+                    <>
+                      <div className="cursor-pointer h-full flex items-center" onClick={() => {
+                        dispatch({ type: "setcheck", payload: false })
+                      }}><FaCheckCircle className="text-white" /></div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="cursor-pointer h-full flex items-center" onClick={() => {
+                        dispatch({ type: "setcheck", payload: true })
+                      }}><BsPencilSquare className="text-white" /></div>
+                    </>
+                  )
+                }
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <button onClick={ } className="text-white">SAVE</button>
+          </div>
+
+        </header>
 
         <div className='h-screen w-full'>
           <SplitPane
@@ -124,7 +190,7 @@ console.log(state.output);
                         </div>
                       </div>
                       <div className='editor'>
-                        <CodeMirror theme={abcdef} value={state.html} className='text-black' height="600px" extensions={[javascript({ jsx: true })]} onChange={(element) => {
+                        <CodeMirror theme={abcdef} value={state.html} className='text-black' height="60vh" extensions={[javascript({ jsx: true })]} onChange={(element) => {
                           dispatch({ type: "sethtml", payload: element })
                         }} />
                       </div>
@@ -144,8 +210,8 @@ console.log(state.output);
                           <FaAngleDown className='text-xl  text-slate-400' />
                         </div>
                       </div>
-                      <div className='editor'>
-                        <CodeMirror theme={abcdef} value={state.css} className='text-black' height="600px" extensions={[javascript({ jsx: true })]} onChange={(element) => {
+                      <div className='editor '>
+                        <CodeMirror theme={abcdef} value={state.css} className='text-black ' height="60vh" extensions={[javascript({ jsx: true })]} onChange={(element) => {
                           dispatch({ type: "setcss", payload: element })
                         }} />
                       </div>
@@ -166,7 +232,7 @@ console.log(state.output);
                         </div>
                       </div>
                       <div className='editor'>
-                        <CodeMirror theme={abcdef} value={state.js} className='text-black' height="600px" extensions={[javascript({ jsx: true })]} onChange={(element) => {
+                        <CodeMirror theme={abcdef} value={state.js} className='text-black' height="60vh" extensions={[javascript({ jsx: true })]} onChange={(element) => {
                           dispatch({ type: "setjs", payload: element })
                         }} />
                       </div>
@@ -180,22 +246,16 @@ console.log(state.output);
             </div>
 
             <div className='overflow-hidden h-full justify-start items-start bg-slate-600 border-2' >
+
               <iframe
-                title="result"
-                srcDoc={state.output}
+                className="w-full"
+                srcDoc={state.output.toString()}
               />
+
             </div>
 
           </SplitPane>
         </div>
-
-
-
-
-
-
-
-
 
       </section>
     </>
