@@ -23,5 +23,5 @@ export const codeSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setloading, setuser } = codeSlice.actions
+export const { setloading, setuser,setproject } = codeSlice.actions
 export default codeSlice.reducer

@@ -33,11 +33,9 @@ function App() {
 
         setDoc(doc(db, "users", usercred?.uid), usercred?.providerData[0]).then(() => {
           dispatch(setuser(usercred?.providerData[0]))
-          
-        })
-        
-      }
 
+        })
+      }
     });
 
     const interval = setTimeout(() => {
@@ -47,11 +45,7 @@ function App() {
     return () => {
       clearTimeout(interval)
     }
-
   }, [])
-
-  console.log(userdata);
-
   return (
     <>
       {loading ? (

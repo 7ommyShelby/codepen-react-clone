@@ -11,6 +11,9 @@ import { javascript } from '@codemirror/lang-javascript';
 import { abcdef } from '@uiw/codemirror-theme-abcdef';
 import img from '../components/codepen-logo-eccd67a3067908687f74b7725787a321b0a13ce18601ba839aaab2bd8df9d772.svg'
 import { Link } from "react-router-dom";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "./firebase";
+import { useSelector, useDispatch } from "react-redux";
 
 function reducer(state, action) {
 
@@ -47,8 +50,30 @@ function reducer(state, action) {
 
 const NewProjects = () => {
 
+  const reduxdispatch = useDispatch()
+  const userdata = useSelector((state) => (state.user))
 
+  async function saveHandler() {
 
+    const id = userdata.uid;
+
+    const doccument = {
+      id: id,
+      title: state.title,
+      html: state.html,
+      css: state.css,
+      js: state.js,
+      output: state.output,
+      user: userdata
+    }
+
+    await setDoc(doc(db, "projects", id), doccument, { merge: false }).then((res) => {
+
+    })
+      .catch((err) => {
+
+      })
+  }
 
   const initial = {
 
@@ -156,7 +181,7 @@ const NewProjects = () => {
           </div>
 
           <div>
-            <button onClick={ } className="text-white">SAVE</button>
+            <button onClick={saveHandler} className="text-white">SAVE</button>
           </div>
 
         </header>
