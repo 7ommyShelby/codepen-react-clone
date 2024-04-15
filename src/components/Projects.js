@@ -28,6 +28,7 @@ const Projects = () => {
     try {
       const docSnap = await getDoc(userDocRef);
       if (docSnap.exists()) {
+
         const userDataFromFirestore = docSnap.data();
         dispatch(setproject(userDataFromFirestore));
 
@@ -47,9 +48,13 @@ const Projects = () => {
 
 
   return (
-    <div className='text-white'>
-
-    </div>
+    <>
+      <div className='text-white'>
+        <div>
+          <p>{userdata.uid}</p>
+        </div>
+      </div>
+    </>
   )
 }
 

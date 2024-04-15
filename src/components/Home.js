@@ -109,6 +109,7 @@ const Home = () => {
                                             <div className={`button flex flex-col bg-slate-500 rounded text-white absolute right-0 w-56 top-20 ${drop ? "block" : "hidden"}`}>
 
                                                 <h1 className='text-2xl px-4 py-4 text-center'>{userdata?.displayName || "Hello User"}</h1>
+                                                <Link className='text-2xl px-4 py-4 text-center' to={'/home/projects'}>Projects</Link>
                                                 <button className='w-full text-2xl bg-red-500 py-4 rounded flex justify-center items-center' onClick={signout} >LogOut</button>
                                                 
                                             </div>
@@ -120,11 +121,13 @@ const Home = () => {
                     </div>
 
                     <div className="projects w-full flex items-center justify-center">
+                    
                         <Routes>
                             <Route path="/projects" element={<Projects />} />
                             <Route path="/auth" element={<SignUp />} />
                             <Route path="/login" element={<Login />} />
                         </Routes>
+
                     </div>
 
                 </div>

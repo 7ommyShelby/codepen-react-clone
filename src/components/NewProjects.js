@@ -51,28 +51,33 @@ function reducer(state, action) {
 const NewProjects = () => {
 
   const reduxdispatch = useDispatch()
-  const userdata = useSelector((state) => (state.user))
 
+  const userdata = useSelector((state) => (state.user))
+  console.log(userdata);
   async function saveHandler() {
 
-    const id = userdata.uid;
+    if (Object.keys(userdata).length !== 0) {
 
-    const doccument = {
-      id: id,
-      title: state.title,
-      html: state.html,
-      css: state.css,
-      js: state.js,
-      output: state.output,
-      user: userdata
-    }
+      const id = userdata.uid;
+      const doccument = {
+        id: id,
+        title: state.title,
+        html: state.html,
+        css: state.css,
+        js: state.js,
+        output: state.output,
+        user: userdata
+      }
 
-    await setDoc(doc(db, "projects", id), doccument, { merge: false }).then((res) => {
-
-    })
-      .catch((err) => {
-
+      await setDoc(doc(db, "projects", id), doccument, { merge: false }).then((res) => {
+        console.log(res);
       })
+        .catch((err) => {
+          console.log(err);
+        })
+    }else{
+      alert("Please LogIn")
+    }
   }
 
   const initial = {
@@ -83,6 +88,7 @@ const NewProjects = () => {
     output: '',
     title: "Untitled",
     check: false,
+
   }
 
   const [state, dispatch] = useReducer(reducer, initial)
@@ -135,12 +141,13 @@ const NewProjects = () => {
 
         <header className="w-full items-center justify-between px-12 py-4">
           <div className="flex items-center gap-6">
-            <Link to={'./home/projects'}>
+            <Link to={'/home/projects'}>
               <img className="w-32" src={img} alt="" />
             </Link>
             <div className="flex items-center justify-center gap-6">
               <div className="flex justify-center items-center gap-3">
-                {
+
+                {Object.keys(userdata).length !== 0 &&
                   state.check ? (
                     <>
                       <input
@@ -161,7 +168,7 @@ const NewProjects = () => {
                 }
               </div>
               <div className="flex justify-center items-center gap-3">
-                {
+                { Object.keys(userdata).length !== 0 &&
                   state.check ? (
                     <>
                       <div className="cursor-pointer h-full flex items-center" onClick={() => {
@@ -175,6 +182,8 @@ const NewProjects = () => {
                       }}><BsPencilSquare className="text-white" /></div>
                     </>
                   )
+                }{
+                  Object.keys(userdata) === 0 ? alert("Please LogIn") : ""
                 }
               </div>
             </div>
@@ -273,7 +282,7 @@ const NewProjects = () => {
             <div className='overflow-hidden h-full justify-start items-start bg-slate-600 border-2' >
 
               <iframe
-                className="w-full"
+                className="w-full h-full"
                 srcDoc={state.output.toString()}
               />
 

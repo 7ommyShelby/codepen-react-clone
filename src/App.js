@@ -46,6 +46,7 @@ function App() {
       clearTimeout(interval)
     }
   }, [])
+  
   return (
     <>
       {loading ? (
@@ -57,7 +58,7 @@ function App() {
           <Routes>
             <Route path='/home/*' element={<Home />} />
             <Route path='/newproject' element={<NewProjects />} />
-            <Route path='/*' element={<Navigate to={'/home'} />} />
+            <Route path='/' element={<Navigate to={'/home'} />} />
           </Routes >
         </div >
       )
